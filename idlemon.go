@@ -41,7 +41,6 @@ func (m *Monitor) Run() {
 			if m.Timeout != nil {
 				m.Timeout <- timeout
 			}
-		default:
 		}
 	}
 }
