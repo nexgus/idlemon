@@ -19,17 +19,24 @@ func main() {
 		func(t time.Time) {
 			logrus.Warnf("timeout: %s", t.Format(time.RFC3339Nano))
 		},
+		func(t time.Time) {
+			logrus.Warnf("resume: %s", t.Format(time.RFC3339Nano))
+		},
 	)
 
 	go monitor.Run()
 
-	logrus.Infof("clear/start")
+	logrus.Infof("start")
 	monitor.Clear <- true
 
 	time.Sleep(2 * time.Second)
-	logrus.Infof("clear/start")
+	logrus.Infof("clear")
 	monitor.Clear <- true
 
-	time.Sleep(monitor.Duration() + 500*time.Millisecond)
-	logrus.Infof("stop")
+	time.Sleep(monitor.Duration() + 2*time.Second)
+
+	logrus.Infof("clear")
+	monitor.Clear <- true
+
+	time.Sleep(3 * time.Second)
 }
