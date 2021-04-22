@@ -10,24 +10,26 @@ import (
 func main() {
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02T15:04:05.000000",
 	})
 
-	timeout := make(chan time.Time, 1)
 	monitor := idlemon.NewMonitor(
 		5,
-		timeout,
+		func(t time.Time) {
+			logrus.Warnf("timeout: %s", t.Format(time.RFC3339Nano))
+		},
 	)
 
 	go monitor.Run()
 
-	logrus.Debugf("clear/start")
+	logrus.Infof("clear/start")
 	monitor.Clear <- true
 
 	time.Sleep(2 * time.Second)
-	logrus.Debugf("clear/start")
+	logrus.Infof("clear/start")
 	monitor.Clear <- true
 
-	t := <-timeout
-	logrus.Debugf("timeout (%s)", t.Format(time.RFC3339Nano))
+	time.Sleep(monitor.Duration() + 500*time.Millisecond)
+	logrus.Infof("stop")
 }
